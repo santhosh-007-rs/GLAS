@@ -1,6 +1,23 @@
 import React, { useEffect, useRef, useState, useId } from 'react';
 import './GlassSurface.css';
 
+const useDarkMode = () => {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    setIsDark(mediaQuery.matches);
+
+    const handler = (e: MediaQueryListEvent) => setIsDark(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
+  return isDark;
+};
+
 export interface GlassSurfaceProps {
   children?: React.ReactNode;
   width?: number | string;
@@ -19,33 +36,15 @@ export interface GlassSurfaceProps {
   blueOffset?: number;
   xChannel?: 'R' | 'G' | 'B';
   yChannel?: 'R' | 'G' | 'B';
-  mixBlendMode?:
-    | 'normal'
-    | 'multiply'
-    | 'screen'
-    | 'overlay'
-    | 'darken'
-    | 'lighten'
-    | 'color-dodge'
-    | 'color-burn'
-    | 'hard-light'
-    | 'soft-light'
-    | 'difference'
-    | 'exclusion'
-    | 'hue'
-    | 'saturation'
-    | 'color'
-    | 'luminosity'
-    | 'plus-darker'
-    | 'plus-lighter';
+  mixBlendMode?: string;
   className?: string;
   style?: React.CSSProperties;
 }
 
 const GlassSurface: React.FC<GlassSurfaceProps> = ({
   children,
-  width = '100%',
-  height = '100%',
+  width = 200,
+  height = 80,
   borderRadius = 20,
   borderWidth = 0.07,
   brightness = 50,
@@ -64,12 +63,12 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   className = '',
   style = {}
 }) => {
-  const id = useId();
-  const filterId = `glass-filter-${id.replace(/:/g, '-')}`; // Safe ID for CSS selector
-  const redGradId = `red-grad-${id.replace(/:/g, '-')}`;
-  const blueGradId = `blue-grad-${id.replace(/:/g, '-')}`;
+  const uniqueId = useId().replace(/:/g, '-');
+  const filterId = `glass-filter-${uniqueId}`;
+  const redGradId = `red-grad-${uniqueId}`;
+  const blueGradId = `blue-grad-${uniqueId}`;
 
-  const [svgSupported, setSvgSupported] = useState<boolean>(false);
+  const [svgSupported, setSvgSupported] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const feImageRef = useRef<SVGFEImageElement>(null);
@@ -77,6 +76,8 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   const greenChannelRef = useRef<SVGFEDisplacementMapElement>(null);
   const blueChannelRef = useRef<SVGFEDisplacementMapElement>(null);
   const gaussianBlurRef = useRef<SVGFEGaussianBlurElement>(null);
+
+  const isDarkMode = useDarkMode();
 
   const generateDisplacementMap = () => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -183,23 +184,105 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
     return div.style.backdropFilter !== '';
   };
 
-  const containerStyle: React.CSSProperties = {
-    ...style,
-    width: typeof width === 'number' ? `${width}px` : width,
-    height: typeof height === 'number' ? `${height}px` : height,
-    borderRadius: `${borderRadius}px`,
-    '--glass-frost': backgroundOpacity,
-    '--glass-saturation': saturation,
-    '--filter-id': `url(#${filterId})`
-  } as React.CSSProperties;
+  const supportsBackdropFilter = () => {
+    if (typeof window === 'undefined') return false;
+    return CSS.supports('backdrop-filter', 'blur(10px)');
+  };
+
+  const getContainerStyles = () => {
+    const baseStyles = {
+      ...style,
+      width: typeof width === 'number' ? `${width}px` : width,
+      height: typeof height === 'number' ? `${height}px` : height,
+      borderRadius: `${borderRadius}px`,
+      '--glass-frost': backgroundOpacity,
+      '--glass-saturation': saturation
+    };
+
+    const backdropFilterSupported = supportsBackdropFilter();
+
+    if (svgSupported) {
+      return {
+        ...baseStyles,
+        background: isDarkMode ? `hsl(0 0% 0% / ${backgroundOpacity})` : `hsl(0 0% 100% / ${backgroundOpacity})`,
+        backdropFilter: `url(#${filterId}) saturate(${saturation})`,
+        boxShadow: isDarkMode
+          ? `0 0 2px 1px color-mix(in oklch, white, transparent 65%) inset,
+             0 0 10px 4px color-mix(in oklch, white, transparent 85%) inset,
+             0px 4px 16px rgba(17, 17, 26, 0.05),
+             0px 8px 24px rgba(17, 17, 26, 0.05),
+             0px 16px 56px rgba(17, 17, 26, 0.05),
+             0px 4px 16px rgba(17, 17, 26, 0.05) inset,
+             0px 8px 24px rgba(17, 17, 26, 0.05) inset,
+             0px 16px 56px rgba(17, 17, 26, 0.05) inset`
+          : `0 0 2px 1px color-mix(in oklch, black, transparent 85%) inset,
+             0 0 10px 4px color-mix(in oklch, black, transparent 90%) inset,
+             0px 4px 16px rgba(17, 17, 26, 0.05),
+             0px 8px 24px rgba(17, 17, 26, 0.05),
+             0px 16px 56px rgba(17, 17, 26, 0.05),
+             0px 4px 16px rgba(17, 17, 26, 0.05) inset,
+             0px 8px 24px rgba(17, 17, 26, 0.05) inset,
+             0px 16px 56px rgba(17, 17, 26, 0.05) inset`
+      };
+    } else {
+      if (isDarkMode) {
+        if (!backdropFilterSupported) {
+          return {
+            ...baseStyles,
+            background: 'rgba(0, 0, 0, 0.4)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
+                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)`
+          };
+        } else {
+          return {
+            ...baseStyles,
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(12px) saturate(1.8) brightness(1.2)',
+            WebkitBackdropFilter: 'blur(12px) saturate(1.8) brightness(1.2)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
+                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)`
+          };
+        }
+      } else {
+        if (!backdropFilterSupported) {
+          return {
+            ...baseStyles,
+            background: 'rgba(255, 255, 255, 0.4)',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
+                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.3)`
+          };
+        } else {
+          return {
+            ...baseStyles,
+            background: 'rgba(255, 255, 255, 0.25)',
+            backdropFilter: 'blur(12px) saturate(1.8) brightness(1.1)',
+            WebkitBackdropFilter: 'blur(12px) saturate(1.8) brightness(1.1)',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            boxShadow: `0 8px 32px 0 rgba(31, 38, 135, 0.2),
+                        0 2px 16px 0 rgba(31, 38, 135, 0.1),
+                        inset 0 1px 0 0 rgba(255, 255, 255, 0.4),
+                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.2)`
+          };
+        }
+      }
+    }
+  };
+
+  const glassSurfaceClasses = 'glass-surface';
 
   return (
     <div
       ref={containerRef}
-      className={`glass-surface ${svgSupported ? 'glass-surface--svg' : 'glass-surface--fallback'} ${className}`}
-      style={containerStyle}
+      className={`${glassSurfaceClasses} ${className}`}
+      style={getContainerStyles() as React.CSSProperties}
     >
-      <svg className="glass-surface__filter" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        className="w-full h-full pointer-events-none absolute inset-0 opacity-0 -z-10"
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <defs>
           <filter id={filterId} colorInterpolationFilters="sRGB" x="0%" y="0%" width="100%" height="100%">
             <feImage ref={feImageRef} x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map" />
@@ -250,7 +333,9 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
         </defs>
       </svg>
 
-      <div className="glass-surface__content">{children}</div>
+      <div className="glass-surface__content">
+        {children}
+      </div>
     </div>
   );
 };

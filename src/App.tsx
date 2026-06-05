@@ -34,6 +34,7 @@ import ShinyText from './components/ShinyText/ShinyText';
 import SpotlightCard from './components/SpotlightCard/SpotlightCard';
 import ClickSpark from './components/ClickSpark/ClickSpark';
 import StarBorder from './components/StarBorder/StarBorder';
+import GlassSurface from './components/GlassSurface/GlassSurface';
 
 import './App.css';
 
@@ -454,138 +455,163 @@ function App() {
       </div>
 
       {/* Sticky Navigation Header */}
+      {/* Sticky Navigation Header */}
       <header className={isScrolled ? 'header-active' : ''}>
-        <div className="container nav-wrapper">
-          <a className="logo" onClick={() => setCurrentView('home')}>
-            <Layers size={24} style={{ color: theme.accent }} />
-            GLAS
-          </a>
+        <GlassSurface
+          width="100%"
+          height={isScrolled ? 72 : 80}
+          borderRadius={0}
+          borderWidth={0}
+          brightness={isScrolled ? 35 : 45}
+          opacity={isScrolled ? 0.94 : 0.85}
+          blur={isScrolled ? 15 : 8}
+          displace={isScrolled ? 3 : 1}
+          backgroundOpacity={isScrolled ? 0.25 : 0.08}
+          saturation={1.5}
+          distortionScale={-140}
+          redOffset={0}
+          greenOffset={10}
+          blueOffset={20}
+          xChannel="R"
+          yChannel="G"
+          mixBlendMode="difference"
+          style={{
+            borderBottom: '1px solid var(--border-color)',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
+        >
+          <div className="container nav-wrapper">
+            <a className="logo" onClick={() => setCurrentView('home')}>
+              <Layers size={24} style={{ color: theme.accent }} />
+              GLAS
+            </a>
 
-          <nav>
-            <ul className="nav-links">
-              <li><a className={currentView === 'home' ? 'active' : ''} onClick={() => setCurrentView('home')}>Home</a></li>
-              <li><a className={currentView.startsWith('category-') ? 'active' : ''} onClick={() => {
-                const psec = document.getElementById('catalogue-section');
-                if (psec) psec.scrollIntoView({ behavior: 'smooth' });
-                else setCurrentView('category-wearables');
-              }}>Catalogue</a></li>
-              <li><a onClick={() => {
-                const sec = document.getElementById('about-section');
-                sec?.scrollIntoView({ behavior: 'smooth' });
-              }}>Manifesto</a></li>
-            </ul>
-          </nav>
+            <nav>
+              <ul className="nav-links">
+                <li><a className={currentView === 'home' ? 'active' : ''} onClick={() => setCurrentView('home')}>Home</a></li>
+                <li><a className={currentView.startsWith('category-') ? 'active' : ''} onClick={() => {
+                  const psec = document.getElementById('catalogue-section');
+                  if (psec) psec.scrollIntoView({ behavior: 'smooth' });
+                  else setCurrentView('category-wearables');
+                }}>Catalogue</a></li>
+                <li><a onClick={() => {
+                  const sec = document.getElementById('about-section');
+                  sec?.scrollIntoView({ behavior: 'smooth' });
+                }}>Manifesto</a></li>
+              </ul>
+            </nav>
 
-          <div className="nav-actions">
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <input 
-                type="text" 
-                placeholder="Search specs..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '20px',
-                  padding: '0.4rem 1rem 0.4rem 2.2rem',
-                  fontSize: '0.85rem',
-                  color: 'white',
-                  width: '180px',
-                  transition: 'all 0.3s ease',
-                  outline: 'none'
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = theme.accent;
-                  e.target.style.width = '240px';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'var(--border-color)';
-                  if (!searchQuery) e.target.style.width = '180px';
-                }}
-              />
-              <Search size={14} style={{ position: 'absolute', left: '12px', color: 'var(--text-muted)' }} />
-            </div>
-            
-            <button className="icon-btn" onClick={() => setIsCartOpen(true)} aria-label="Open Cart">
-              <ShoppingBag size={18} />
-              {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
-            </button>
-
-            {/* Profile / Account Control */}
-            {user ? (
-              <div style={{ position: 'relative' }}>
-                <button 
-                  className="icon-btn" 
-                  onClick={() => setIsProfileDropdownOpen(prev => !prev)}
-                  style={{ border: `1px solid ${theme.accent}` }}
-                  aria-label="Account Settings"
-                >
-                  <UserIcon size={18} style={{ color: theme.accent }} />
-                </button>
-
-                {isProfileDropdownOpen && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '3.2rem',
-                    right: 0,
-                    width: '260px',
-                    background: 'rgba(10, 10, 12, 0.95)',
-                    backdropFilter: 'blur(30px)',
+            <div className="nav-actions">
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <input 
+                  type="text" 
+                  placeholder="Search specs..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.03)',
                     border: '1px solid var(--border-color)',
-                    borderRadius: '16px',
-                    padding: '1.25rem',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0.75rem',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-                    zIndex: 100
-                  }}>
-                    <div>
-                      <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--mono)' }}>LOGGED IN AS</p>
-                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: 'white', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {user.user_metadata?.full_name || user.email}
-                      </p>
-                    </div>
-                    <hr style={{ border: 'none', borderTop: '1px solid var(--border-color)' }} />
-                    <button 
-                      onClick={handleSignOut}
-                      style={{
-                        background: 'rgba(255, 46, 147, 0.1)',
-                        border: '1px solid var(--accent-pink)',
-                        color: 'var(--accent-pink)',
-                        padding: '0.5rem',
-                        borderRadius: '10px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.5rem',
-                        fontWeight: '600',
-                        fontSize: '0.85rem',
-                        transition: 'all 0.3s ease'
-                      }}
-                    >
-                      <LogOut size={14} />
-                      Log Out
-                    </button>
-                  </div>
-                )}
+                    borderRadius: '20px',
+                    padding: '0.4rem 1rem 0.4rem 2.2rem',
+                    fontSize: '0.85rem',
+                    color: 'white',
+                    width: '180px',
+                    transition: 'all 0.3s ease',
+                    outline: 'none'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = theme.accent;
+                    e.target.style.width = '240px';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'var(--border-color)';
+                    if (!searchQuery) e.target.style.width = '180px';
+                  }}
+                />
+                <Search size={14} style={{ position: 'absolute', left: '12px', color: 'var(--text-muted)' }} />
               </div>
-            ) : (
-              <button 
-                className="btn-secondary" 
-                onClick={() => {
-                  setAuthMode('signin');
-                  setAuthMessage(null);
-                  setIsAuthModalOpen(true);
-                }}
-                style={{ padding: '0.4rem 1.2rem', fontSize: '0.85rem', borderRadius: '15px' }}
-              >
-                Sign In
+              
+              <button className="icon-btn" onClick={() => setIsCartOpen(true)} aria-label="Open Cart">
+                <ShoppingBag size={18} />
+                {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
               </button>
-            )}
+
+              {/* Profile / Account Control */}
+              {user ? (
+                <div style={{ position: 'relative' }}>
+                  <button 
+                    className="icon-btn" 
+                    onClick={() => setIsProfileDropdownOpen(prev => !prev)}
+                    style={{ border: `1px solid ${theme.accent}` }}
+                    aria-label="Account Settings"
+                  >
+                    <UserIcon size={18} style={{ color: theme.accent }} />
+                  </button>
+
+                  {isProfileDropdownOpen && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '3.2rem',
+                      right: 0,
+                      width: '260px',
+                      background: 'rgba(10, 10, 12, 0.95)',
+                      backdropFilter: 'blur(30px)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '16px',
+                      padding: '1.25rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.75rem',
+                      boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                      zIndex: 100
+                    }}>
+                      <div>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--mono)' }}>LOGGED IN AS</p>
+                        <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: 'white', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {user.user_metadata?.full_name || user.email}
+                        </p>
+                      </div>
+                      <hr style={{ border: 'none', borderTop: '1px solid var(--border-color)' }} />
+                      <button 
+                        onClick={handleSignOut}
+                        style={{
+                          background: 'rgba(255, 46, 147, 0.1)',
+                          border: '1px solid var(--accent-pink)',
+                          color: 'var(--accent-pink)',
+                          padding: '0.5rem',
+                          borderRadius: '10px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.5rem',
+                          fontWeight: '600',
+                          fontSize: '0.85rem',
+                          transition: 'all 0.3s ease'
+                        }}
+                      >
+                        <LogOut size={14} />
+                        Log Out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button 
+                  className="btn-secondary" 
+                  onClick={() => {
+                    setAuthMode('signin');
+                    setAuthMessage(null);
+                    setIsAuthModalOpen(true);
+                  }}
+                  style={{ padding: '0.4rem 1.2rem', fontSize: '0.85rem', borderRadius: '15px' }}
+                >
+                  Sign In
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+        </GlassSurface>
       </header>
 
       {/* Sub-Header Category Nav bar, sticky when category view is active */}

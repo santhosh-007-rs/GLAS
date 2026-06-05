@@ -83,12 +83,10 @@ header {
   width: 100%;
   z-index: 50;
   transition: all 0.3s ease;
-  border-bottom: 1px solid var(--border-color);
 }
 
-.header-active {
-  background: rgba(5, 5, 5, 0.7);
-  backdrop-filter: blur(20px);
+header .glass-surface__content {
+  padding: 0;
 }
 
 .nav-wrapper {

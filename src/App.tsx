@@ -36,7 +36,6 @@ import ClickSpark from './components/ClickSpark/ClickSpark';
 import StarBorder from './components/StarBorder/StarBorder';
 import GlassSurface from './components/GlassSurface/GlassSurface';
 import ScrollFrameAnimation from './components/ScrollFrameAnimation/ScrollFrameAnimation';
-import InteractiveSpecExplorer from './components/InteractiveSpecExplorer/InteractiveSpecExplorer';
 
 import './App.css';
 
@@ -1183,7 +1182,7 @@ function App() {
                             style={{ flexGrow: 1, padding: '0.6rem', fontSize: '0.85rem', borderRadius: '12px' }}
                             onClick={() => setSelectedProduct(product)}
                           >
-                            Tuner Specs
+                            Quick View
                           </button>
                           <button 
                             className="btn-primary" 
@@ -1300,9 +1299,6 @@ function App() {
               </div>
             </div>
           </section>
-
-          {/* Interactive Lab Telemetry explorer */}
-          <InteractiveSpecExplorer />
 
           {/* Tactical FAQ Accordion */}
           <section className="products-sec" style={{ background: 'transparent', padding: '6rem 0 8rem' }}>

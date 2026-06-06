@@ -1347,7 +1347,7 @@ function App() {
       )}
 
       {/* Brand Concept / About Section */}
-      <section className="products-sec" id="about-section" style={{ borderTop: '1px solid var(--border-color)', background: 'var(--bg)' }}>
+      <section className="products-sec" id="about-section" style={{ borderTop: '1px solid var(--border-color)', background: 'transparent' }}>
         <div className="container" style={{ maxWidth: '900px' }}>
           <div className="sec-header">
             <span className="hero-subtitle">OUR DESIGN MANIFESTO</span>
@@ -1355,21 +1355,21 @@ function App() {
           </div>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem', marginTop: '2rem' }}>
-            <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border-color)', padding: '2rem', borderRadius: '20px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ background: 'var(--card-bg)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '2rem', borderRadius: '20px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '1rem', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.05)' }}>
               <Cpu size={24} style={{ color: 'var(--accent-cyan)' }} />
               <h4 style={{ fontFamily: 'var(--heading)', fontSize: '1.2rem', fontWeight: 600 }}>SECURE CLOUD AUTH</h4>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
                 All user accounts are authenticated directly using Supabase secure cryptography, sync'd with direct Google OAuth redirects.
               </p>
             </div>
-            <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border-color)', padding: '2rem', borderRadius: '20px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ background: 'var(--card-bg)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '2rem', borderRadius: '20px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '1rem', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.05)' }}>
               <Layers size={24} style={{ color: 'var(--accent-purple)' }} />
               <h4 style={{ fontFamily: 'var(--heading)', fontSize: '1.2rem', fontWeight: 600 }}>GLASSMORPHIC FINISH</h4>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
                 Real-time refraction mapping, chromatic aberrations, and soft-focus frosted layers combine to create a digital interface that feels truly physical.
               </p>
             </div>
-            <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border-color)', padding: '2rem', borderRadius: '20px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ background: 'var(--card-bg)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '2rem', borderRadius: '20px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '1rem', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.05)' }}>
               <Sparkles size={24} style={{ color: 'var(--accent-pink)' }} />
               <h4 style={{ fontFamily: 'var(--heading)', fontSize: '1.2rem', fontWeight: 600 }}>METALLIC BACKDROP</h4>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>

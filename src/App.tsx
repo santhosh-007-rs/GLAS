@@ -27,7 +27,7 @@ import {
 import type { User } from '@supabase/supabase-js';
 
 import { supabase } from './supabaseClient';
-import LiquidChrome from './components/LiquidChrome/LiquidChrome';
+import Ferrofluid from './components/Ferrofluid/Ferrofluid';
 import DecayCard from './components/DecayCard/DecayCard';
 import BlurText from './components/BlurText/BlurText';
 import ShinyText from './components/ShinyText/ShinyText';
@@ -745,22 +745,39 @@ function App() {
 
   const theme = activeCategoryTheme();
 
+  const getFerrofluidColors = () => {
+    switch (currentView) {
+      case 'category-wearables':
+        return ['#00f3ff', '#001a24', '#000000'];
+      case 'category-audio':
+        return ['#b372ff', '#120721', '#000000'];
+      case 'category-displays':
+        return ['#ff2e93', '#210514', '#000000'];
+      case 'category-objects':
+        return ['#00ffaa', '#052115', '#000000'];
+      default:
+        return ['#111111', '#000000', '#00f3ff', '#b372ff'];
+    }
+  };
+
   return (
     <ClickSpark sparkColor={theme.accent} sparkSize={10} sparkRadius={18} sparkCount={9} duration={400}>
-      {/* Dynamic LiquidChrome Metallic Backdrop */}
+      {/* Dynamic Ferrofluid Cybernetic Backdrop */}
       <div className="bg-canvas-container">
-        <LiquidChrome 
-          baseColor={
-            currentView === 'category-audio' ? [0.03, 0.01, 0.06] : 
-            currentView === 'category-displays' ? [0.06, 0.01, 0.03] : 
-            currentView === 'category-objects' ? [0.01, 0.04, 0.02] : 
-            [0.01, 0.02, 0.05]
-          } 
-          speed={0.12} 
-          amplitude={0.55} 
-          frequencyX={2.4} 
-          frequencyY={1.8} 
-          interactive={true} 
+        <Ferrofluid 
+          colors={getFerrofluidColors()} 
+          speed={0.35} 
+          scale={1.8} 
+          turbulence={0.7} 
+          glow={1.8}
+          rimWidth={0.3}
+          fluidity={0.25}
+          sharpness={3.5}
+          opacity={0.65}
+          mouseInteraction={true}
+          mouseStrength={1.2}
+          mouseRadius={0.3}
+          mouseDampening={0.15}
         />
       </div>
 

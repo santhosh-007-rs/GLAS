@@ -124,6 +124,16 @@ export default function ScrollFrameAnimation({ themeAccent }: ScrollFrameAnimati
     };
   }, [isLoading, images]);
 
+  const getViewportOpacity = () => {
+    if (scrollProgress < 0.15) {
+      return scrollProgress / 0.15;
+    }
+    if (scrollProgress > 0.85) {
+      return Math.max(0, (1 - scrollProgress) / 0.15);
+    }
+    return 1;
+  };
+
   return (
     <div className="scroll-animation-container" ref={containerRef}>
       {isLoading ? (
@@ -139,7 +149,7 @@ export default function ScrollFrameAnimation({ themeAccent }: ScrollFrameAnimati
           </div>
         </div>
       ) : (
-        <div className="scroll-sticky-viewport">
+        <div className="scroll-sticky-viewport" style={{ opacity: getViewportOpacity() }}>
           <canvas ref={canvasRef} className="scroll-canvas" />
           <div className="scroll-overlay-glow"></div>
           

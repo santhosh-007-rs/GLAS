@@ -485,7 +485,7 @@ function App() {
         >
           <div className="container nav-wrapper">
             <a className="logo" onClick={() => setCurrentView('home')}>
-              <Layers size={24} style={{ color: theme.accent }} />
+              <Layers size={28} style={{ color: theme.accent }} />
               GLAS
             </a>
 

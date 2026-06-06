@@ -35,6 +35,7 @@ import SpotlightCard from './components/SpotlightCard/SpotlightCard';
 import ClickSpark from './components/ClickSpark/ClickSpark';
 import StarBorder from './components/StarBorder/StarBorder';
 import GlassSurface from './components/GlassSurface/GlassSurface';
+import ScrollFrameAnimation from './components/ScrollFrameAnimation/ScrollFrameAnimation';
 
 import './App.css';
 
@@ -1054,6 +1055,9 @@ function App() {
               </div>
             </div>
           </section>
+
+          {/* Volumetric Scroll-Driven Vision Showcase */}
+          <ScrollFrameAnimation themeAccent={theme.accent} />
 
           {/* Separated Categories Promo Section */}
           <section className="category-promo-section" id="catalogue-section">

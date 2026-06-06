@@ -143,30 +143,6 @@ export default function ScrollFrameAnimation({ themeAccent }: ScrollFrameAnimati
           <canvas ref={canvasRef} className="scroll-canvas" />
           <div className="scroll-overlay-glow"></div>
           
-          <div className={`scroll-text-overlay ${scrollProgress > 0.05 && scrollProgress < 0.32 ? 'active' : ''}`}>
-            <span className="scroll-text-subtitle" style={{ color: themeAccent }}>01 / REFRACTIVE SYSTEM</span>
-            <h2 className="scroll-text-title">CRYSTALLINE DESIGN</h2>
-            <p className="scroll-text-desc">High-precision micro-waveguides that bend photons to build volumetric cybernetic hardware interfaces.</p>
-          </div>
-
-          <div className={`scroll-text-overlay ${scrollProgress >= 0.38 && scrollProgress < 0.65 ? 'active' : ''}`}>
-            <span className="scroll-text-subtitle" style={{ color: themeAccent }}>02 / RESONANCE SPECTRUM</span>
-            <h2 className="scroll-text-title">SOUNDWAVE CALIBRATION</h2>
-            <p className="scroll-text-desc">Levitating acoustic capsules matching sonic frequencies with integrated neon light guides.</p>
-          </div>
-
-          <div className={`scroll-text-overlay ${scrollProgress >= 0.70 && scrollProgress < 0.95 ? 'active' : ''}`}>
-            <span className="scroll-text-subtitle" style={{ color: themeAccent }}>03 / KINETIC VISIONS</span>
-            <h2 className="scroll-text-title">FERROFLUID GEOMETRY</h2>
-            <p className="scroll-text-desc">Fluid dynamic magnetic cores shifting forms in perfect synchronization with your screen movement.</p>
-          </div>
-          
-          <div className="scroll-progress-dots">
-            <div className={`scroll-dot ${scrollProgress > 0.05 && scrollProgress < 0.32 ? 'active' : ''}`} style={{ '--dot-color': themeAccent } as React.CSSProperties}></div>
-            <div className={`scroll-dot ${scrollProgress >= 0.38 && scrollProgress < 0.65 ? 'active' : ''}`} style={{ '--dot-color': themeAccent } as React.CSSProperties}></div>
-            <div className={`scroll-dot ${scrollProgress >= 0.70 && scrollProgress < 0.95 ? 'active' : ''}`} style={{ '--dot-color': themeAccent } as React.CSSProperties}></div>
-          </div>
-          
           <div className="scroll-guide-prompt" style={{ opacity: scrollProgress < 0.08 ? 1 : 0 }}>
             <span style={{ color: themeAccent }}>SCROLL TO INITIATE REVELATION</span>
             <div className="scroll-guide-arrow" style={{ borderBottomColor: themeAccent, borderRightColor: themeAccent }}></div>

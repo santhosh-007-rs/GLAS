@@ -191,6 +191,7 @@ interface FerrofluidProps {
   dpr?: number;
   paused?: boolean;
   colors?: string[];
+  backgroundColor?: string;
   speed?: number;
   scale?: number;
   turbulence?: number;
@@ -213,6 +214,7 @@ const Ferrofluid = ({
   dpr,
   paused = false,
   colors = ['#ffffff', '#ffffff', '#ffffff'],
+  backgroundColor = '#03010A',
   speed = 0.5,
   scale = 1.6,
   turbulence = 1,
@@ -250,7 +252,8 @@ const Ferrofluid = ({
     rendererRef.current = renderer;
     const gl = renderer.gl;
     const canvas = gl.canvas;
-    gl.clearColor(0, 0, 0, 0);
+    const bgRGB = hexToRGB(backgroundColor);
+    gl.clearColor(bgRGB[0], bgRGB[1], bgRGB[2], 1.0);
     canvas.style.width = '100%';
     canvas.style.height = '100%';
     canvas.style.display = 'block';
@@ -381,6 +384,7 @@ const Ferrofluid = ({
     dpr,
     paused,
     colors,
+    backgroundColor,
     speed,
     scale,
     turbulence,
@@ -406,6 +410,7 @@ const Ferrofluid = ({
         height: '100%',
         position: 'relative',
         overflow: 'hidden',
+        backgroundColor,
         ...(mixBlendMode && { mixBlendMode } as any)
       }}
     />

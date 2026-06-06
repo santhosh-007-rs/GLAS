@@ -36,7 +36,7 @@
 
 body {
   overflow-x: hidden;
-  background-color: var(--bg);
+  background-color: transparent;
   min-height: 100vh;
 }
 
@@ -361,7 +361,7 @@ header .container {
 .products-sec {
   padding: 8rem 0;
   position: relative;
-  background-color: var(--bg-darker);
+  background-color: transparent;
 }
 
 .sec-header {
@@ -897,7 +897,7 @@ header .container {
 /* Footer styling */
 footer {
   border-top: 1px solid var(--border-color);
-  background-color: var(--bg-darker);
+  background-color: transparent;
   padding: 4rem 0;
   text-align: center;
   color: var(--text-muted);
@@ -999,7 +999,7 @@ footer {
 /* Category Quick-Nav banner on Home view */
 .category-promo-section {
   padding: 8rem 0;
-  background: var(--bg-darker);
+  background: transparent;
 }
 
 .category-cards-grid {
@@ -1165,8 +1165,9 @@ footer {
 
 /* Logo loop marquee */
 .logo-marquee-sec {
-  background: #020202;
-  border-y: 1px solid var(--border-color);
+  background: transparent;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
   padding: 3rem 0;
   overflow: hidden;
   position: relative;

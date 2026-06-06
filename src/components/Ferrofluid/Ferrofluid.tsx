@@ -391,8 +391,12 @@ const Ferrofluid = ({
   return (
     <div
       ref={containerRef}
-      className={`w-full h-full overflow-hidden relative ${className ?? ''}`}
+      className={`${className ?? ''}`}
       style={{
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+        overflow: 'hidden',
         ...(mixBlendMode && { mixBlendMode } as any)
       }}
     />

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   ShoppingBag, 
   Search, 
@@ -181,6 +181,53 @@ interface CartItem {
   quantity: number;
 }
 
+interface DbCartItem {
+  id?: string;
+  user_id: string;
+  product_id: string;
+  quantity: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+const MAX_CART_QUANTITY = 99;
+
+// Validate parsed localStorage cart data matches expected schema
+const validateCartData = (data: unknown): CartItem[] => {
+  if (!Array.isArray(data)) return [];
+  return data.filter((item): item is CartItem => {
+    if (!item || typeof item !== 'object') return false;
+    const ci = item as Record<string, unknown>;
+    if (!ci.product || typeof ci.product !== 'object') return false;
+    const p = ci.product as Record<string, unknown>;
+    if (typeof p.id !== 'string' || typeof p.price !== 'number') return false;
+    if (typeof ci.quantity !== 'number' || ci.quantity < 1 || ci.quantity > MAX_CART_QUANTITY) return false;
+    // Verify the product ID actually exists in our catalogue
+    return PRODUCTS.some(prod => prod.id === p.id);
+  });
+};
+
+// Map Supabase auth errors to safe user-facing messages
+const sanitizeAuthError = (err: any): string => {
+  const msg = (err?.message || '').toLowerCase();
+  if (msg.includes('invalid login') || msg.includes('invalid password') || msg.includes('user not found')) {
+    return 'Invalid email or password.';
+  }
+  if (msg.includes('already registered') || msg.includes('already exists')) {
+    return 'An account with this email already exists. Try signing in instead.';
+  }
+  if (msg.includes('rate limit') || msg.includes('too many')) {
+    return 'Too many attempts. Please wait a moment and try again.';
+  }
+  if (msg.includes('weak password') || msg.includes('password')) {
+    return 'Password does not meet requirements. Use at least 8 characters with a mix of letters and numbers.';
+  }
+  if (msg.includes('email') && msg.includes('confirm')) {
+    return 'Please verify your email before signing in.';
+  }
+  return 'Authentication failed. Please try again.';
+};
+
 function App() {
   const [cart, setCart] = useState<CartItem[]>(() => {
     if (typeof window !== 'undefined') {
@@ -189,9 +236,9 @@ function App() {
       const stored = localStorage.getItem(key);
       if (stored) {
         try {
-          return JSON.parse(stored);
-        } catch (e) {
-          console.error('Failed to parse cart:', e);
+          return validateCartData(JSON.parse(stored));
+        } catch {
+          localStorage.removeItem(key);
         }
       }
     }
@@ -214,14 +261,18 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const mapDbItemsToCart = (dbItems: any[]): CartItem[] => {
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
+  const cartQtyRef = useRef<number>(0);
+
+  const mapDbItemsToCart = (dbItems: DbCartItem[]): CartItem[] => {
     return dbItems
       .map(dbItem => {
         const product = PRODUCTS.find(p => p.id === dbItem.product_id);
         if (!product) return null;
+        const qty = Math.max(1, Math.min(MAX_CART_QUANTITY, dbItem.quantity));
         return {
           product,
-          quantity: dbItem.quantity
+          quantity: qty
         };
       })
       .filter((item): item is CartItem => item !== null);
@@ -239,6 +290,18 @@ function App() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState<boolean>(false);
   const [resendCountdown, setResendCountdown] = useState<number>(0);
   const [toast, setToast] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
+
+  // Close profile dropdown on outside click
+  useEffect(() => {
+    if (!isProfileDropdownOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(e.target as Node)) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isProfileDropdownOpen]);
 
   const showToast = (text: string, type: 'success' | 'error' | 'info' = 'info') => {
     setToast({ text, type });
@@ -400,15 +463,46 @@ function App() {
       });
       if (error) throw error;
     } catch (err: any) {
-      setAuthMessage({ type: 'error', text: err.message || 'Google Auth initiation failed.' });
+      setAuthMessage({ type: 'error', text: sanitizeAuthError(err) });
       setAuthLoading(false);
     }
   };
+
+  // Password strength validation
+  const getPasswordStrength = useCallback((pwd: string): { score: number; label: string; color: string } => {
+    let score = 0;
+    if (pwd.length >= 8) score++;
+    if (pwd.length >= 12) score++;
+    if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) score++;
+    if (/\d/.test(pwd)) score++;
+    if (/[^a-zA-Z0-9]/.test(pwd)) score++;
+
+    if (score <= 1) return { score, label: 'Weak', color: 'var(--accent-pink)' };
+    if (score <= 2) return { score, label: 'Fair', color: '#f0a500' };
+    if (score <= 3) return { score, label: 'Good', color: 'var(--accent-cyan)' };
+    return { score, label: 'Strong', color: 'var(--accent-emerald)' };
+  }, []);
 
   // Email Sign In / Sign Up
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return;
+
+    // Client-side password validation for sign-up
+    if (authMode === 'signup') {
+      if (password.length < 8) {
+        setAuthMessage({ type: 'error', text: 'Password must be at least 8 characters long.' });
+        return;
+      }
+      if (!/\d/.test(password)) {
+        setAuthMessage({ type: 'error', text: 'Password must contain at least one number.' });
+        return;
+      }
+      if (!/[a-zA-Z]/.test(password)) {
+        setAuthMessage({ type: 'error', text: 'Password must contain at least one letter.' });
+        return;
+      }
+    }
 
     setAuthLoading(true);
     setAuthMessage(null);
@@ -436,7 +530,7 @@ function App() {
         setAuthMode('verification-sent');
       }
     } catch (err: any) {
-      setAuthMessage({ type: 'error', text: err.message || 'Authentication failed.' });
+      setAuthMessage({ type: 'error', text: sanitizeAuthError(err) });
     } finally {
       setAuthLoading(false);
     }
@@ -454,59 +548,66 @@ function App() {
     setCart([]);
   };
 
-  // Cart operations
+  // Cart operations with quantity bounds and race-condition-safe DB sync
   const addToCart = async (product: Product) => {
-    let newQty = 1;
+    // Verify product exists in our catalogue
+    if (!PRODUCTS.some(p => p.id === product.id)) return;
+
     setCart(prev => {
       const existing = prev.find(item => item.product.id === product.id);
       if (existing) {
-        newQty = existing.quantity + 1;
+        const clamped = Math.min(existing.quantity + 1, MAX_CART_QUANTITY);
+        cartQtyRef.current = clamped;
+        if (clamped === existing.quantity) return prev; // already at max
         return prev.map(item => 
           item.product.id === product.id 
-            ? { ...item, quantity: item.quantity + 1 } 
+            ? { ...item, quantity: clamped } 
             : item
         );
       }
+      cartQtyRef.current = 1;
       return [...prev, { product, quantity: 1 }];
     });
     setIsCartOpen(true);
 
     if (user) {
+      const qtyToSync = cartQtyRef.current;
       try {
         await supabase
           .from('cart_items')
           .upsert({
             user_id: user.id,
             product_id: product.id,
-            quantity: newQty
+            quantity: qtyToSync
           }, { onConflict: 'user_id,product_id' });
       } catch (err) {
-        console.error('Error adding to database cart:', err);
+        if (import.meta.env.DEV) console.error('Error adding to database cart:', err);
       }
     }
   };
 
   const updateQuantity = async (productId: string, delta: number) => {
-    let newQty = 0;
     setCart(prev => {
       return prev.map(item => {
         if (item.product.id === productId) {
-          newQty = item.quantity + delta;
+          const newQty = Math.min(Math.max(0, item.quantity + delta), MAX_CART_QUANTITY);
+          cartQtyRef.current = newQty;
           return newQty > 0 ? { ...item, quantity: newQty } : null;
         }
         return item;
       }).filter(Boolean) as CartItem[];
     });
 
+    const qtyToSync = cartQtyRef.current;
     if (user) {
       try {
-        if (newQty > 0) {
+        if (qtyToSync > 0) {
           await supabase
             .from('cart_items')
             .upsert({
               user_id: user.id,
               product_id: productId,
-              quantity: newQty
+              quantity: qtyToSync
             }, { onConflict: 'user_id,product_id' });
         } else {
           await supabase
@@ -515,7 +616,7 @@ function App() {
             .match({ user_id: user.id, product_id: productId });
         }
       } catch (err) {
-        console.error('Error updating database cart:', err);
+        if (import.meta.env.DEV) console.error('Error updating database cart:', err);
       }
     }
   };
@@ -530,7 +631,7 @@ function App() {
           .delete()
           .match({ user_id: user.id, product_id: productId });
       } catch (err) {
-        console.error('Error removing from database cart:', err);
+        if (import.meta.env.DEV) console.error('Error removing from database cart:', err);
       }
     }
   };
@@ -1595,6 +1696,25 @@ function App() {
                   />
                   <Lock size={16} style={{ position: 'absolute', left: '12px', top: '13px', color: 'var(--text-muted)' }} />
                 </div>
+
+                {authMode === 'signup' && password.length > 0 && (
+                  <div style={{ marginTop: '0.25rem', fontSize: '0.8rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                      <span style={{ color: 'var(--text-muted)' }}>Password Strength:</span>
+                      <span style={{ color: getPasswordStrength(password).color, fontWeight: 'bold' }}>
+                        {getPasswordStrength(password).label}
+                      </span>
+                    </div>
+                    <div style={{ height: '4px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '2px', overflow: 'hidden' }}>
+                      <div style={{ 
+                        height: '100%', 
+                        width: `${(getPasswordStrength(password).score / 5) * 100}%`, 
+                        background: getPasswordStrength(password).color,
+                        transition: 'width 0.3s ease'
+                      }} />
+                    </div>
+                  </div>
+                )}
 
                 {authMessage && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

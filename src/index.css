@@ -78,22 +78,34 @@ body {
 /* Global Navigation */
 header {
   position: fixed;
-  top: 0;
+  top: 1.5rem;
   left: 0;
-  width: 100%;
+  right: 0;
+  display: flex;
+  justify-content: center;
   z-index: 50;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  padding: 0 1.5rem;
+}
+
+header.header-active {
+  top: 0.75rem;
 }
 
 header .glass-surface__content {
   padding: 0;
 }
 
+header .container {
+  padding: 0 1.5rem;
+}
+
 .nav-wrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 4.5rem;
+  height: 100%;
 }
 
 .logo {

@@ -455,20 +455,19 @@ function App() {
       </div>
 
       {/* Sticky Navigation Header */}
-      {/* Sticky Navigation Header */}
       <header className={isScrolled ? 'header-active' : ''}>
         <GlassSurface
           width="100%"
-          height={isScrolled ? 72 : 80}
-          borderRadius={0}
-          borderWidth={0}
-          brightness={isScrolled ? 35 : 45}
+          height={isScrolled ? 64 : 72}
+          borderRadius={14}
+          borderWidth={0.05}
+          brightness={isScrolled ? 30 : 45}
           opacity={isScrolled ? 0.94 : 0.85}
-          blur={isScrolled ? 15 : 8}
+          blur={isScrolled ? 20 : 10}
           displace={isScrolled ? 3 : 1}
           backgroundOpacity={isScrolled ? 0.25 : 0.08}
-          saturation={1.5}
-          distortionScale={-140}
+          saturation={1.6}
+          distortionScale={-130}
           redOffset={0}
           greenOffset={10}
           blueOffset={20}
@@ -476,7 +475,11 @@ function App() {
           yChannel="G"
           mixBlendMode="difference"
           style={{
-            borderBottom: '1px solid var(--border-color)',
+            maxWidth: '1200px',
+            width: '100%',
+            pointerEvents: 'auto',
+            border: '1px solid var(--border-color)',
+            boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.35)',
             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         >

@@ -263,6 +263,7 @@ function App() {
 
   const profileDropdownRef = useRef<HTMLDivElement>(null);
   const cartQtyRef = useRef<number>(0);
+  const prevUserRef = useRef<User | null | undefined>(undefined);
 
   const mapDbItemsToCart = (dbItems: DbCartItem[]): CartItem[] => {
     return dbItems
@@ -444,6 +445,16 @@ function App() {
   // Persist cart to localStorage with user-specific keys
   useEffect(() => {
     if (user === undefined) return;
+
+    const prevUser = prevUserRef.current;
+    prevUserRef.current = user;
+
+    // Prevent leaking the logged-in user's cart to the guest slot during logout
+    if (prevUser && !user) {
+      localStorage.removeItem('glas_cart');
+      return;
+    }
+
     if (user) {
       localStorage.setItem(`glas_cart_${user.id}`, JSON.stringify(cart));
       localStorage.setItem('glas_last_user_id', user.id);
@@ -564,15 +575,26 @@ function App() {
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    if (user) {
-      localStorage.removeItem(`glas_cart_${user.id}`);
+    setIsProfileDropdownOpen(false);
+    const loggedOutUser = user;
+
+    // 1. Clear React state synchronously
+    setCart([]);
+    setUser(null);
+
+    // 2. Clear localStorage synchronously
+    if (loggedOutUser) {
+      localStorage.removeItem(`glas_cart_${loggedOutUser.id}`);
     }
     localStorage.removeItem('glas_last_user_id');
     localStorage.removeItem('glas_cart');
-    setUser(null);
-    setIsProfileDropdownOpen(false);
-    setCart([]);
+
+    // 3. Request Supabase authentication signout
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      if (import.meta.env.DEV) console.error('Supabase sign out error:', err);
+    }
   };
 
   // Cart operations with quantity bounds and race-condition-safe DB sync

@@ -217,6 +217,19 @@ function App() {
     localStorage.setItem('glas_cart', JSON.stringify(cart));
   }, [cart]);
 
+  const mapDbItemsToCart = (dbItems: any[]): CartItem[] => {
+    return dbItems
+      .map(dbItem => {
+        const product = PRODUCTS.find(p => p.id === dbItem.product_id);
+        if (!product) return null;
+        return {
+          product,
+          quantity: dbItem.quantity
+        };
+      })
+      .filter((item): item is CartItem => item !== null);
+  };
+
   // Supabase Auth States
   const [user, setUser] = useState<User | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
@@ -274,6 +287,73 @@ function App() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Sync Cart with Supabase when user authentication state changes
+  useEffect(() => {
+    const syncCart = async () => {
+      if (!user) return;
+
+      try {
+        // Fetch current database cart
+        const { data: dbItems, error: fetchError } = await supabase
+          .from('cart_items')
+          .select('*')
+          .eq('user_id', user.id);
+
+        if (fetchError) {
+          console.warn('Error fetching cart from database (make sure the cart_items table is created):', fetchError.message);
+          return;
+        }
+
+        // Check if there are local guest items in localStorage to merge
+        const stored = localStorage.getItem('glas_cart');
+        const guestItems: CartItem[] = stored ? JSON.parse(stored) : [];
+
+        if (guestItems.length > 0) {
+          // Merge guest items into the database
+          for (const guestItem of guestItems) {
+            const existingDbItem = dbItems?.find(item => item.product_id === guestItem.product.id);
+            if (existingDbItem) {
+              // Upsert with merged quantity
+              await supabase
+                .from('cart_items')
+                .upsert({
+                  user_id: user.id,
+                  product_id: guestItem.product.id,
+                  quantity: existingDbItem.quantity + guestItem.quantity
+                }, { onConflict: 'user_id,product_id' });
+            } else {
+              // Insert new item
+              await supabase
+                .from('cart_items')
+                .insert({
+                  user_id: user.id,
+                  product_id: guestItem.product.id,
+                  quantity: guestItem.quantity
+                });
+            }
+          }
+          // Clear guest cart from localStorage now that it is merged
+          localStorage.removeItem('glas_cart');
+
+          // Fetch the final merged database cart
+          const { data: mergedItems } = await supabase
+            .from('cart_items')
+            .select('*')
+            .eq('user_id', user.id);
+          
+          setCart(mapDbItemsToCart(mergedItems || []));
+        } else {
+          // No guest items to merge: load standard DB cart
+          setCart(mapDbItemsToCart(dbItems || []));
+        }
+      } catch (err) {
+        console.error('Cart database sync error:', err);
+      }
+    };
+
+    syncCart();
+  }, [user]);
 
   // Resend verification email
   const handleResendVerification = async () => {
@@ -364,10 +444,12 @@ function App() {
   };
 
   // Cart operations
-  const addToCart = (product: Product) => {
+  const addToCart = async (product: Product) => {
+    let newQty = 1;
     setCart(prev => {
       const existing = prev.find(item => item.product.id === product.id);
       if (existing) {
+        newQty = existing.quantity + 1;
         return prev.map(item => 
           item.product.id === product.id 
             ? { ...item, quantity: item.quantity + 1 } 
@@ -377,22 +459,69 @@ function App() {
       return [...prev, { product, quantity: 1 }];
     });
     setIsCartOpen(true);
+
+    if (user) {
+      try {
+        await supabase
+          .from('cart_items')
+          .upsert({
+            user_id: user.id,
+            product_id: product.id,
+            quantity: newQty
+          }, { onConflict: 'user_id,product_id' });
+      } catch (err) {
+        console.error('Error adding to database cart:', err);
+      }
+    }
   };
 
-  const updateQuantity = (productId: string, delta: number) => {
+  const updateQuantity = async (productId: string, delta: number) => {
+    let newQty = 0;
     setCart(prev => {
       return prev.map(item => {
         if (item.product.id === productId) {
-          const newQty = item.quantity + delta;
+          newQty = item.quantity + delta;
           return newQty > 0 ? { ...item, quantity: newQty } : null;
         }
         return item;
       }).filter(Boolean) as CartItem[];
     });
+
+    if (user) {
+      try {
+        if (newQty > 0) {
+          await supabase
+            .from('cart_items')
+            .upsert({
+              user_id: user.id,
+              product_id: productId,
+              quantity: newQty
+            }, { onConflict: 'user_id,product_id' });
+        } else {
+          await supabase
+            .from('cart_items')
+            .delete()
+            .match({ user_id: user.id, product_id: productId });
+        }
+      } catch (err) {
+        console.error('Error updating database cart:', err);
+      }
+    }
   };
 
-  const removeFromCart = (productId: string) => {
+  const removeFromCart = async (productId: string) => {
     setCart(prev => prev.filter(item => item.product.id !== productId));
+
+    if (user) {
+      try {
+        await supabase
+          .from('cart_items')
+          .delete()
+          .match({ user_id: user.id, product_id: productId });
+      } catch (err) {
+        console.error('Error removing from database cart:', err);
+      }
+    }
   };
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);

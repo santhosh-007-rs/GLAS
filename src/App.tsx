@@ -746,18 +746,7 @@ function App() {
   const theme = activeCategoryTheme();
 
   const getFerrofluidColors = () => {
-    switch (currentView) {
-      case 'category-wearables':
-        return ['#00f3ff', '#00bcff', '#0077ff'];
-      case 'category-audio':
-        return ['#b372ff', '#ec4899', '#9333ea'];
-      case 'category-displays':
-        return ['#ff2e93', '#ff007f', '#f43f5e'];
-      case 'category-objects':
-        return ['#00ffaa', '#00d98b', '#10b981'];
-      default:
-        return ['#00f3ff', '#b372ff', '#ff2e93', '#00ffaa'];
-    }
+    return ['#00f3ff', '#000000'];
   };
 
   return (

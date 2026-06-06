@@ -182,7 +182,19 @@ interface CartItem {
 }
 
 function App() {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('glas_cart');
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch (e) {
+          console.error('Failed to parse cart from localStorage:', e);
+        }
+      }
+    }
+    return [];
+  });
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -199,6 +211,11 @@ function App() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Persist cart to localStorage
+  useEffect(() => {
+    localStorage.setItem('glas_cart', JSON.stringify(cart));
+  }, [cart]);
 
   // Supabase Auth States
   const [user, setUser] = useState<User | null>(null);
@@ -342,6 +359,8 @@ function App() {
     await supabase.auth.signOut();
     setUser(null);
     setIsProfileDropdownOpen(false);
+    setCart([]);
+    localStorage.removeItem('glas_cart');
   };
 
   // Cart operations
@@ -480,7 +499,8 @@ function App() {
             pointerEvents: 'auto',
             border: '1px solid var(--border-color)',
             boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.35)',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            overflow: 'visible'
           }}
         >
           <div className="container nav-wrapper">

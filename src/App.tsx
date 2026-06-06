@@ -27,7 +27,7 @@ import {
 import type { User } from '@supabase/supabase-js';
 
 import { supabase } from './supabaseClient';
-import Ferrofluid from './components/Ferrofluid/Ferrofluid';
+import Grainient from './components/Grainient/Grainient';
 import DecayCard from './components/DecayCard/DecayCard';
 import BlurText from './components/BlurText/BlurText';
 import ShinyText from './components/ShinyText/ShinyText';
@@ -745,28 +745,33 @@ function App() {
 
   const theme = activeCategoryTheme();
 
-  const getFerrofluidColors = () => {
-    return ['#00f3ff', '#000000'];
-  };
-
   return (
     <ClickSpark sparkColor={theme.accent} sparkSize={10} sparkRadius={18} sparkCount={9} duration={400}>
-      {/* Dynamic Ferrofluid Cybernetic Backdrop */}
+      {/* Dynamic Grainient Cybernetic Backdrop */}
       <div className="bg-canvas-container">
-        <Ferrofluid 
-          colors={getFerrofluidColors()} 
-          speed={0.35} 
-          scale={1.8} 
-          turbulence={0.7} 
-          glow={3.8}
-          rimWidth={0.5}
-          fluidity={0.25}
-          sharpness={2.5}
-          opacity={1.0}
-          mouseInteraction={true}
-          mouseStrength={1.5}
-          mouseRadius={0.3}
-          mouseDampening={0.15}
+        <Grainient
+          color1="#000000"
+          color2="#00f3ff"
+          color3="#000000"
+          timeSpeed={0.25}
+          colorBalance={0}
+          warpStrength={1}
+          warpFrequency={5}
+          warpSpeed={2}
+          warpAmplitude={50}
+          blendAngle={0}
+          blendSoftness={0.05}
+          rotationAmount={500}
+          noiseScale={2}
+          grainAmount={0.1}
+          grainScale={2}
+          grainAnimated={false}
+          contrast={1.5}
+          gamma={1}
+          saturation={1}
+          centerX={0}
+          centerY={0}
+          zoom={0.9}
         />
       </div>
 

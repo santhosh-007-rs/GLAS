@@ -184,12 +184,14 @@ interface CartItem {
 function App() {
   const [cart, setCart] = useState<CartItem[]>(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('glas_cart');
+      const lastUserId = localStorage.getItem('glas_last_user_id');
+      const key = lastUserId ? `glas_cart_${lastUserId}` : 'glas_cart';
+      const stored = localStorage.getItem(key);
       if (stored) {
         try {
           return JSON.parse(stored);
         } catch (e) {
-          console.error('Failed to parse cart from localStorage:', e);
+          console.error('Failed to parse cart:', e);
         }
       }
     }
@@ -211,11 +213,6 @@ function App() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Persist cart to localStorage
-  useEffect(() => {
-    localStorage.setItem('glas_cart', JSON.stringify(cart));
-  }, [cart]);
 
   const mapDbItemsToCart = (dbItems: any[]): CartItem[] => {
     return dbItems
@@ -355,6 +352,16 @@ function App() {
     syncCart();
   }, [user]);
 
+  // Persist cart to localStorage with user-specific keys
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem(`glas_cart_${user.id}`, JSON.stringify(cart));
+      localStorage.setItem('glas_last_user_id', user.id);
+    } else {
+      localStorage.setItem('glas_cart', JSON.stringify(cart));
+    }
+  }, [cart, user]);
+
   // Resend verification email
   const handleResendVerification = async () => {
     if (!email) {
@@ -437,10 +444,14 @@ function App() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
+    if (user) {
+      localStorage.removeItem(`glas_cart_${user.id}`);
+    }
+    localStorage.removeItem('glas_last_user_id');
+    localStorage.removeItem('glas_cart');
     setUser(null);
     setIsProfileDropdownOpen(false);
     setCart([]);
-    localStorage.removeItem('glas_cart');
   };
 
   // Cart operations

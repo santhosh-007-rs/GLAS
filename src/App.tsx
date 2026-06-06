@@ -279,7 +279,7 @@ function App() {
   };
 
   // Supabase Auth States
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null | undefined>(undefined);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup' | 'verification-sent'>('signin');
   const [email, setEmail] = useState<string>('');
@@ -338,11 +338,37 @@ function App() {
   // Monitor Supabase Auth Session
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (!currentUser) {
+        const stored = localStorage.getItem('glas_cart');
+        if (stored) {
+          try {
+            setCart(validateCartData(JSON.parse(stored)));
+          } catch {
+            setCart([]);
+          }
+        } else {
+          setCart([]);
+        }
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (!currentUser) {
+        const stored = localStorage.getItem('glas_cart');
+        if (stored) {
+          try {
+            setCart(validateCartData(JSON.parse(stored)));
+          } catch {
+            setCart([]);
+          }
+        } else {
+          setCart([]);
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -417,6 +443,7 @@ function App() {
 
   // Persist cart to localStorage with user-specific keys
   useEffect(() => {
+    if (user === undefined) return;
     if (user) {
       localStorage.setItem(`glas_cart_${user.id}`, JSON.stringify(cart));
       localStorage.setItem('glas_last_user_id', user.id);

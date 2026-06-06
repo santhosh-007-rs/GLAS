@@ -820,10 +820,6 @@ function App() {
                   if (psec) psec.scrollIntoView({ behavior: 'smooth' });
                   else setCurrentView('category-wearables');
                 }}>Catalogue</a></li>
-                <li><a onClick={() => {
-                  const sec = document.getElementById('about-section');
-                  sec?.scrollIntoView({ behavior: 'smooth' });
-                }}>Manifesto</a></li>
               </ul>
             </nav>
 
@@ -1575,39 +1571,7 @@ function App() {
         </section>
       )}
 
-      {/* Brand Concept / About Section */}
-      <section className="products-sec" id="about-section" style={{ borderTop: '1px solid var(--border-color)', background: 'transparent' }}>
-        <div className="container" style={{ maxWidth: '900px' }}>
-          <div className="sec-header">
-            <span className="hero-subtitle">OUR DESIGN MANIFESTO</span>
-            <h2 className="sec-title">BENDING LIGHT, CAPTURING ACOUSTICS</h2>
-          </div>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem', marginTop: '2rem' }}>
-            <div style={{ background: 'var(--card-bg)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '2rem', borderRadius: '20px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '1rem', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.05)' }}>
-              <Cpu size={24} style={{ color: 'var(--accent-cyan)' }} />
-              <h4 style={{ fontFamily: 'var(--heading)', fontSize: '1.2rem', fontWeight: 600 }}>SECURE CLOUD AUTH</h4>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
-                All user accounts are authenticated directly using Supabase secure cryptography, sync'd with direct Google OAuth redirects.
-              </p>
-            </div>
-            <div style={{ background: 'var(--card-bg)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '2rem', borderRadius: '20px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '1rem', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.05)' }}>
-              <Layers size={24} style={{ color: 'var(--accent-purple)' }} />
-              <h4 style={{ fontFamily: 'var(--heading)', fontSize: '1.2rem', fontWeight: 600 }}>GLASSMORPHIC FINISH</h4>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
-                Real-time refraction mapping, chromatic aberrations, and soft-focus frosted layers combine to create a digital interface that feels truly physical.
-              </p>
-            </div>
-            <div style={{ background: 'var(--card-bg)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '2rem', borderRadius: '20px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '1rem', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.05)' }}>
-              <Sparkles size={24} style={{ color: 'var(--accent-pink)' }} />
-              <h4 style={{ fontFamily: 'var(--heading)', fontSize: '1.2rem', fontWeight: 600 }}>METALLIC BACKDROP</h4>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
-                Cursor-following spotlights, staggering header reveals, and liquid metallic flows simulate the natural, organic movement of fluid media.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+
 
       {/* Shopping Cart Side Drawer */}
       <div className={`cart-drawer-backdrop ${isCartOpen ? 'active' : ''}`} onClick={() => setIsCartOpen(false)}>
@@ -2103,10 +2067,6 @@ function App() {
               setCurrentView('category-wearables');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}>Catalogue</a></li>
-            <li><a onClick={() => {
-              const sec = document.getElementById('about-section');
-              sec?.scrollIntoView({ behavior: 'smooth' });
-            }}>Manifesto</a></li>
           </ul>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', fontSize: '0.85rem' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>

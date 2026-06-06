@@ -98,7 +98,7 @@ header .glass-surface__content {
 }
 
 header .container {
-  padding: 0 1.5rem;
+  padding: 0 1.5rem 0 1rem;
 }
 
 .nav-wrapper {
@@ -122,7 +122,7 @@ header .container {
   align-items: center;
   gap: 0.6rem;
   cursor: pointer;
-  margin-left: -0.6rem;
+  margin-left: -0.8rem;
 }
 
 .nav-links {

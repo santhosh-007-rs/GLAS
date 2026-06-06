@@ -36,6 +36,7 @@ import ClickSpark from './components/ClickSpark/ClickSpark';
 import StarBorder from './components/StarBorder/StarBorder';
 import GlassSurface from './components/GlassSurface/GlassSurface';
 import ScrollFrameAnimation from './components/ScrollFrameAnimation/ScrollFrameAnimation';
+import InteractiveSpecExplorer from './components/InteractiveSpecExplorer/InteractiveSpecExplorer';
 
 import './App.css';
 
@@ -254,6 +255,7 @@ function App() {
   
   // Scrolled nav effect
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -999,7 +1001,7 @@ function App() {
                 </div>
                 
                 <p className="hero-desc">
-                  Explore a professional, high-fidelity portfolio of smart rings, waveguide AR eyewear, levitating speakers, and kinetic fluid containers synced with modern styling variables.
+                  Explore a portfolio of smart rings, waveguide AR eyewear, levitating speakers, and kinetic fluid containers synced with modern styling variables.
                 </p>
 
                 <div className="hero-cta">
@@ -1018,6 +1020,29 @@ function App() {
                       Create Account
                     </button>
                   )}
+                </div>
+
+                {/* Cybernetic Specs Trust Banner */}
+                <div style={{
+                  display: 'flex',
+                  gap: '2.5rem',
+                  marginTop: '3.5rem',
+                  paddingTop: '2.5rem',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                  flexWrap: 'wrap'
+                }}>
+                  <div>
+                    <span style={{ display: 'block', fontSize: '1.75rem', fontWeight: '800', fontFamily: 'var(--mono)', color: 'var(--accent-cyan)' }}>0.07mm</span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Glass Tolerance</span>
+                  </div>
+                  <div>
+                    <span style={{ display: 'block', fontSize: '1.75rem', fontWeight: '800', fontFamily: 'var(--mono)', color: 'var(--accent-purple)' }}>45dB</span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Acoustic Damping</span>
+                  </div>
+                  <div>
+                    <span style={{ display: 'block', fontSize: '1.75rem', fontWeight: '800', fontFamily: 'var(--mono)', color: 'var(--accent-pink)' }}>100%</span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Supabase Secure</span>
+                  </div>
                 </div>
               </div>
 
@@ -1063,6 +1088,127 @@ function App() {
                 <div className="marquee-item"><Sparkles size={18} className="accent-pink"/> ULTRA REFRACTIVE</div>
                 <div className="marquee-item"><Volume2 size={18} className="accent-emerald"/> ACOUSTIC LAB</div>
                 <div className="marquee-item"><Tv size={18} className="accent-cyan"/> WAVEGUIDE DISPLAY</div>
+              </div>
+            </div>
+          </section>
+
+          {/* Featured Innovations Section */}
+          <section className="products-sec" style={{ background: 'transparent', padding: '6rem 0 2rem' }}>
+            <div className="container">
+              <div className="sec-header">
+                <span className="hero-subtitle" style={{ color: 'var(--accent-cyan)' }}>GLAS SELECTIONS</span>
+                <h2 className="sec-title">FEATURED REVELATIONS</h2>
+                <p className="sec-desc">A curated highlight of our high-fidelity, refractive cybernetic hardware.</p>
+              </div>
+
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '2.5rem',
+                marginTop: '3rem'
+              }}>
+                {PRODUCTS.filter(p => ['lume-ring', 'orbit-headphones', 'prism-display'].includes(p.id)).map(product => {
+                  let accentColor = 'var(--accent-cyan)';
+                  if (product.category === 'audio') accentColor = 'var(--accent-purple)';
+                  if (product.category === 'displays') accentColor = 'var(--accent-pink)';
+
+                  return (
+                    <SpotlightCard 
+                      key={product.id} 
+                      className="product-card-glass" 
+                      spotlightColor={product.category === 'audio' ? 'rgba(179, 114, 255, 0.15)' : product.category === 'displays' ? 'rgba(255, 46, 147, 0.15)' : 'rgba(0, 243, 255, 0.15)'}
+                      style={{ height: '560px', display: 'flex', flexDirection: 'column' }}
+                    >
+                      <div className="product-image-container" style={{ position: 'relative', height: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {product.badge && (
+                          <span className="product-badge" style={{ 
+                            background: `${accentColor}15`, 
+                            borderColor: accentColor, 
+                            color: accentColor,
+                            position: 'absolute',
+                            top: '1rem',
+                            left: '1rem',
+                            fontSize: '0.75rem',
+                            fontFamily: 'var(--mono)',
+                            padding: '0.2rem 0.6rem',
+                            borderRadius: '10px',
+                            border: '1px solid'
+                          }}>
+                            {product.badge}
+                          </span>
+                        )}
+                        <img 
+                          src={product.image} 
+                          alt={product.name} 
+                          className="product-image" 
+                          style={{ maxHeight: '160px', maxWidth: '100%', objectFit: 'contain', transition: 'all 0.5s ease' }} 
+                        />
+                      </div>
+
+                      <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flexGrow: 1, justifyContent: 'space-between' }}>
+                        <div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+                            <span style={{ fontSize: '0.75rem', fontFamily: 'var(--mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                              {product.category}
+                            </span>
+                            <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'white', fontFamily: 'var(--mono)' }}>
+                              ${product.price}
+                            </span>
+                          </div>
+                          
+                          <h3 style={{ fontFamily: 'var(--heading)', fontSize: '1.4rem', fontWeight: 700, color: 'white', marginBottom: '0.75rem' }}>
+                            {product.name}
+                          </h3>
+                          
+                          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0, height: '64px', overflow: 'hidden' }}>
+                            {product.description}
+                          </p>
+
+                          <div style={{ marginTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem' }}>
+                            <span style={{ fontSize: '0.7rem', fontFamily: 'var(--mono)', color: accentColor, fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>TELEMETRY SPECS</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                              {Object.entries(product.specs).slice(0, 2).map(([key, val]) => (
+                                <div key={key} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem' }}>
+                                  <span style={{ color: 'var(--text-muted)' }}>{key}:</span>
+                                  <span style={{ color: 'white', fontWeight: '500' }}>{val}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                          <button 
+                            className="btn-secondary" 
+                            style={{ flexGrow: 1, padding: '0.6rem', fontSize: '0.85rem', borderRadius: '12px' }}
+                            onClick={() => setSelectedProduct(product)}
+                          >
+                            Tuner Specs
+                          </button>
+                          <button 
+                            className="btn-primary" 
+                            style={{ 
+                              background: accentColor, 
+                              borderColor: accentColor, 
+                              color: 'black', 
+                              fontWeight: 'bold',
+                              borderRadius: '12px',
+                              padding: '0.6rem 1rem',
+                              fontSize: '0.85rem',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.25rem'
+                            }}
+                            onClick={() => addToCart(product)}
+                          >
+                            Acquire <ArrowRight size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    </SpotlightCard>
+                  );
+                })}
               </div>
             </div>
           </section>
@@ -1151,6 +1297,93 @@ function App() {
                     Open Suite <ChevronRight size={14} />
                   </div>
                 </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Interactive Lab Telemetry explorer */}
+          <InteractiveSpecExplorer />
+
+          {/* Tactical FAQ Accordion */}
+          <section className="products-sec" style={{ background: 'transparent', padding: '6rem 0 8rem' }}>
+            <div className="container" style={{ maxWidth: '850px' }}>
+              <div className="sec-header">
+                <span className="hero-subtitle" style={{ color: 'var(--accent-pink)' }}>KNOWLEDGE DECK</span>
+                <h2 className="sec-title">FAQ REGISTRY</h2>
+                <p className="sec-desc">Common diagnostic reports and conceptual specs explained.</p>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '3.5rem' }}>
+                {[
+                  {
+                    q: "How does the Lume Smart Ring project its biometric aura?",
+                    a: "The ring houses a custom micro-OLED display band wrapped within circular waveguide channels. Photons generated from heartbeat frequencies bounce internally, projecting a localized, soft aura around the outer ring chassis."
+                  },
+                  {
+                    q: "Is the Prism Holographic Monitor compatible with conventional operating systems?",
+                    a: "Yes. Using a standard OpticLink interface over Thunderbolt 4, our hardware maps traditional 2D raster frame buffers into real-time refractive layers, outputting a volumetric space model without requiring special headsets."
+                  },
+                  {
+                    q: "What secures the synchronization of custom sizing templates?",
+                    a: "All account credentials and calibration templates are managed securely using Supabase keypair cryptography. Sessions sync with Row Level Security (RLS) directly to isolated database clusters."
+                  },
+                  {
+                    q: "How does the magnetic suspension work in the Sonic Levitating Speaker?",
+                    a: "A dynamic electromagnetic ring in the base plate continuously measures distance and controls power distribution. The base balances the neodymium core inside the sphere at a constant 15mm height, while induction coils stream power wirelessly to the high-res audio drivers."
+                  }
+                ].map((faq, index) => {
+                  const isOpen = activeFaq === index;
+                  return (
+                    <div 
+                      key={index}
+                      style={{
+                        background: 'var(--card-bg)',
+                        border: `1px solid ${isOpen ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.06)'}`,
+                        borderRadius: '16px',
+                        padding: '1.25rem 1.75rem',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        boxShadow: isOpen ? '0 10px 30px rgba(0,0,0,0.3)' : 'none'
+                      }}
+                      onClick={() => setActiveFaq(isOpen ? null : index)}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '1.05rem', fontWeight: 'bold', color: isOpen ? 'var(--accent-cyan)' : 'white', fontFamily: 'var(--heading)', transition: 'color 0.3s ease' }}>
+                          {faq.q}
+                        </span>
+                        <span style={{ 
+                          fontSize: '1.5rem', 
+                          fontWeight: '200', 
+                          color: isOpen ? 'var(--accent-cyan)' : 'var(--text-muted)',
+                          transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)',
+                          transition: 'all 0.3s ease',
+                          display: 'inline-block',
+                          lineHeight: 1
+                        }}>
+                          +
+                        </span>
+                      </div>
+                      <div style={{
+                        maxHeight: isOpen ? '200px' : '0',
+                        overflow: 'hidden',
+                        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                        opacity: isOpen ? 1 : 0
+                      }}>
+                        <p style={{ 
+                          fontSize: '0.88rem', 
+                          color: 'var(--text-muted)', 
+                          lineHeight: '1.6', 
+                          marginTop: '1rem',
+                          marginRight: '2rem'
+                        }}>
+                          {faq.a}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </section>

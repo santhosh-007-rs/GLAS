@@ -4,12 +4,14 @@ import './SpotlightCard.css';
 interface SpotlightCardProps extends React.PropsWithChildren {
   className?: string;
   spotlightColor?: string;
+  style?: React.CSSProperties;
 }
 
 const SpotlightCard: React.FC<SpotlightCardProps> = ({
   children,
   className = '',
-  spotlightColor = 'rgba(255, 255, 255, 0.25)'
+  spotlightColor = 'rgba(255, 255, 255, 0.25)',
+  style = {}
 }) => {
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -26,7 +28,7 @@ const SpotlightCard: React.FC<SpotlightCardProps> = ({
   };
 
   return (
-    <div ref={divRef} onMouseMove={handleMouseMove} className={`card-spotlight ${className}`}>
+    <div ref={divRef} onMouseMove={handleMouseMove} className={`card-spotlight ${className}`} style={style}>
       {children}
     </div>
   );

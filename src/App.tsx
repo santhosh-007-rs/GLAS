@@ -748,15 +748,15 @@ function App() {
   const getFerrofluidColors = () => {
     switch (currentView) {
       case 'category-wearables':
-        return ['#00f3ff', '#001a24', '#000000'];
+        return ['#00f3ff', '#00bcff', '#0077ff'];
       case 'category-audio':
-        return ['#b372ff', '#120721', '#000000'];
+        return ['#b372ff', '#ec4899', '#9333ea'];
       case 'category-displays':
-        return ['#ff2e93', '#210514', '#000000'];
+        return ['#ff2e93', '#ff007f', '#f43f5e'];
       case 'category-objects':
-        return ['#00ffaa', '#052115', '#000000'];
+        return ['#00ffaa', '#00d98b', '#10b981'];
       default:
-        return ['#111111', '#000000', '#00f3ff', '#b372ff'];
+        return ['#00f3ff', '#b372ff', '#ff2e93', '#00ffaa'];
     }
   };
 
@@ -769,13 +769,13 @@ function App() {
           speed={0.35} 
           scale={1.8} 
           turbulence={0.7} 
-          glow={1.8}
-          rimWidth={0.3}
+          glow={3.8}
+          rimWidth={0.5}
           fluidity={0.25}
-          sharpness={3.5}
-          opacity={0.65}
+          sharpness={2.5}
+          opacity={1.0}
           mouseInteraction={true}
-          mouseStrength={1.2}
+          mouseStrength={1.5}
           mouseRadius={0.3}
           mouseDampening={0.15}
         />

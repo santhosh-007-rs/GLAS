@@ -750,9 +750,9 @@ function App() {
       {/* Dynamic Grainient Cybernetic Backdrop */}
       <div className="bg-canvas-container">
         <Grainient
-          color1="#000000"
+          color1="#030214"
           color2="#00f3ff"
-          color3="#000000"
+          color3="#030214"
           timeSpeed={0.25}
           colorBalance={0}
           warpStrength={1}

@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Outfit:wght@200..900&family=Space+Grotesk:wght@300..700&display=swap');
 
 :root {
-  --bg: #050505;
-  --bg-darker: #020202;
-  --card-bg: rgba(15, 15, 15, 0.4);
-  --card-hover-bg: rgba(20, 20, 25, 0.55);
+  --bg: #030214;
+  --bg-darker: #01010a;
+  --card-bg: rgba(6, 8, 26, 0.38);
+  --card-hover-bg: rgba(10, 14, 40, 0.52);
   
   --text-main: #f3f4f6;
   --text-muted: #8a8e99;
@@ -431,15 +431,18 @@ header .container {
 
 .product-card-glass {
   background: var(--card-bg);
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;
   width: 100%;
   height: 100%;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: all 0.4s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .product-card-glass:hover {
@@ -589,9 +592,10 @@ header .container {
   width: 450px;
   max-width: 100%;
   height: 100%;
-  background: rgba(8, 8, 10, 0.85);
+  background: rgba(4, 5, 20, 0.65);
   backdrop-filter: blur(35px) saturate(1.8);
-  border-left: 1px solid var(--border-color);
+  -webkit-backdrop-filter: blur(35px) saturate(1.8);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
   transform: translateX(100%);
@@ -787,12 +791,15 @@ header .container {
   width: 100%;
   height: auto;
   min-height: 500px;
-  background: rgba(10, 10, 12, 0.75);
-  border: 1px solid var(--border-color);
+  background: rgba(4, 5, 20, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 32px;
   overflow: hidden;
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
   position: relative;
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .modal-close-btn {
@@ -1024,16 +1031,19 @@ footer {
 .category-promo-card {
   height: 320px;
   background: var(--card-bg);
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;
   padding: 2rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   cursor: pointer;
-  transition: all 0.4s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px 0 rgba(3, 2, 20, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .category-promo-card::after {
@@ -1117,9 +1127,10 @@ footer {
 
 /* Category indicator under header */
 .category-indicator-bar {
-  background: rgba(5, 5, 5, 0.4);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border-color);
+  background: rgba(4, 5, 20, 0.45);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   padding: 0.5rem 0;
   position: fixed;
   top: 4.5rem;

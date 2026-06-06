@@ -259,20 +259,20 @@ const Ferrofluid = ({
     const { arr, count, avg } = prepColors(colors);
 
     const uniforms = {
-      iResolution: { value: [gl.drawingBufferWidth, gl.drawingBufferHeight, 1] },
-      iMouse: { value: [0, 0] },
+      iResolution: { value: new Float32Array([gl.drawingBufferWidth, gl.drawingBufferHeight, 1]) },
+      iMouse: { value: new Float32Array([0, 0]) },
       iTime: { value: 0 },
-      uColor0: { value: arr[0] },
-      uColor1: { value: arr[1] },
-      uColor2: { value: arr[2] },
-      uColor3: { value: arr[3] },
-      uColor4: { value: arr[4] },
-      uColor5: { value: arr[5] },
-      uColor6: { value: arr[6] },
-      uColor7: { value: arr[7] },
+      uColor0: { value: new Float32Array(arr[0]) },
+      uColor1: { value: new Float32Array(arr[1]) },
+      uColor2: { value: new Float32Array(arr[2]) },
+      uColor3: { value: new Float32Array(arr[3]) },
+      uColor4: { value: new Float32Array(arr[4]) },
+      uColor5: { value: new Float32Array(arr[5]) },
+      uColor6: { value: new Float32Array(arr[6]) },
+      uColor7: { value: new Float32Array(arr[7]) },
       uColorCount: { value: count },
-      uMouseColor: { value: avg },
-      uFlow: { value: flowVec(flowDirection) },
+      uMouseColor: { value: new Float32Array(avg) },
+      uFlow: { value: new Float32Array(flowVec(flowDirection)) },
       uSpeed: { value: speed },
       uScale: { value: scale },
       uTurbulence: { value: turbulence },
@@ -298,7 +298,12 @@ const Ferrofluid = ({
     const resize = () => {
       const rect = container.getBoundingClientRect();
       renderer.setSize(rect.width, rect.height);
-      uniforms.iResolution.value = [gl.drawingBufferWidth, gl.drawingBufferHeight, 1];
+      if (programRef.current) {
+        const resUniform = programRef.current.uniforms.iResolution.value as Float32Array;
+        resUniform[0] = gl.canvas.width;
+        resUniform[1] = gl.canvas.height;
+        resUniform[2] = 1;
+      }
     };
 
     resize();
@@ -311,8 +316,10 @@ const Ferrofluid = ({
       const x = (e.clientX - rect.left) * sc;
       const y = (rect.height - (e.clientY - rect.top)) * sc;
       mouseTargetRef.current = [x, y];
-      if (mouseDampening <= 0) {
-        uniforms.iMouse.value = [x, y];
+      if (mouseDampening <= 0 && programRef.current) {
+        const mouseUniform = programRef.current.uniforms.iMouse.value as Float32Array;
+        mouseUniform[0] = x;
+        mouseUniform[1] = y;
       }
     };
     if (mouseInteraction) {
@@ -321,20 +328,22 @@ const Ferrofluid = ({
 
     const loop = (t: number) => {
       rafRef.current = requestAnimationFrame(loop);
-      uniforms.iTime.value = t * 0.001;
-      if (mouseDampening > 0) {
-        if (!lastTimeRef.current) lastTimeRef.current = t;
-        const dt = (t - lastTimeRef.current) / 1000;
-        lastTimeRef.current = t;
-        const tau = Math.max(1e-4, mouseDampening);
-        let factor = 1 - Math.exp(-dt / tau);
-        if (factor > 1) factor = 1;
-        const target = mouseTargetRef.current;
-        const cur = uniforms.iMouse.value;
-        cur[0] += (target[0] - cur[0]) * factor;
-        cur[1] += (target[1] - cur[1]) * factor;
-      } else {
-        lastTimeRef.current = t;
+      if (programRef.current) {
+        programRef.current.uniforms.iTime.value = t * 0.001;
+        if (mouseDampening > 0) {
+          if (!lastTimeRef.current) lastTimeRef.current = t;
+          const dt = (t - lastTimeRef.current) / 1000;
+          lastTimeRef.current = t;
+          const tau = Math.max(1e-4, mouseDampening);
+          let factor = 1 - Math.exp(-dt / tau);
+          if (factor > 1) factor = 1;
+          const target = mouseTargetRef.current;
+          const cur = programRef.current.uniforms.iMouse.value as Float32Array;
+          cur[0] += (target[0] - cur[0]) * factor;
+          cur[1] += (target[1] - cur[1]) * factor;
+        } else {
+          lastTimeRef.current = t;
+        }
       }
       if (!paused && programRef.current && meshRef.current) {
         try {

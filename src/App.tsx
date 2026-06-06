@@ -475,7 +475,7 @@ function App() {
           yChannel="G"
           mixBlendMode="difference"
           style={{
-            maxWidth: '1200px',
+            maxWidth: '1400px',
             width: '100%',
             pointerEvents: 'auto',
             border: '1px solid var(--border-color)',

@@ -249,8 +249,44 @@ function App() {
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   
-  // Navigation View Switching
-  const [currentView, setCurrentView] = useState<string>('home');
+  // Navigation View Switching (Initial path parsing for clean URL routing)
+  const [currentView, setCurrentView] = useState<string>(() => {
+    const path = typeof window !== 'undefined' ? window.location.pathname : '/';
+    if (path === '/catalogue/wearables') return 'category-wearables';
+    if (path === '/catalogue/audio') return 'category-audio';
+    if (path === '/catalogue/displays') return 'category-displays';
+    if (path === '/catalogue/objects') return 'category-objects';
+    if (path.startsWith('/catalogue')) return 'category-wearables';
+    return 'home';
+  });
+
+  const navigateToView = (view: string) => {
+    setCurrentView(view);
+    let path = '/';
+    if (view === 'category-wearables') path = '/catalogue/wearables';
+    else if (view === 'category-audio') path = '/catalogue/audio';
+    else if (view === 'category-displays') path = '/catalogue/displays';
+    else if (view === 'category-objects') path = '/catalogue/objects';
+
+    if (window.location.pathname !== path) {
+      window.history.pushState(null, '', path);
+    }
+  };
+
+  // Listen to popstate (browser back/forward button clicks)
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      if (path === '/catalogue/wearables') setCurrentView('category-wearables');
+      else if (path === '/catalogue/audio') setCurrentView('category-audio');
+      else if (path === '/catalogue/displays') setCurrentView('category-displays');
+      else if (path === '/catalogue/objects') setCurrentView('category-objects');
+      else if (path.startsWith('/catalogue')) setCurrentView('category-wearables');
+      else setCurrentView('home');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
   
   // Scrolled nav effect
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
@@ -807,18 +843,18 @@ function App() {
           }}
         >
           <div className="container nav-wrapper">
-            <a className="logo" onClick={() => setCurrentView('home')}>
+            <a className="logo" onClick={() => navigateToView('home')}>
               <Layers size={28} style={{ color: theme.accent }} />
               GLAS
             </a>
 
             <nav>
               <ul className="nav-links">
-                <li><a className={currentView === 'home' ? 'active' : ''} onClick={() => setCurrentView('home')}>Home</a></li>
+                <li><a className={currentView === 'home' ? 'active' : ''} onClick={() => navigateToView('home')}>Home</a></li>
                 <li><a className={currentView.startsWith('category-') ? 'active' : ''} onClick={() => {
                   const psec = document.getElementById('catalogue-section');
                   if (psec) psec.scrollIntoView({ behavior: 'smooth' });
-                  else setCurrentView('category-wearables');
+                  else navigateToView('category-wearables');
                 }}>Catalogue</a></li>
               </ul>
             </nav>
@@ -942,7 +978,7 @@ function App() {
           <li>
             <a 
               className={currentView === 'category-wearables' ? 'active' : ''} 
-              onClick={() => setCurrentView('category-wearables')}
+              onClick={() => navigateToView('category-wearables')}
             >
               Wearables <span className="tab-badge">{PRODUCTS.filter(p => p.category === 'wearables').length}</span>
             </a>
@@ -950,7 +986,7 @@ function App() {
           <li>
             <a 
               className={currentView === 'category-audio' ? 'active' : ''} 
-              onClick={() => setCurrentView('category-audio')}
+              onClick={() => navigateToView('category-audio')}
             >
               Audio <span className="tab-badge">{PRODUCTS.filter(p => p.category === 'audio').length}</span>
             </a>
@@ -958,7 +994,7 @@ function App() {
           <li>
             <a 
               className={currentView === 'category-displays' ? 'active' : ''} 
-              onClick={() => setCurrentView('category-displays')}
+              onClick={() => navigateToView('category-displays')}
             >
               Displays <span className="tab-badge">{PRODUCTS.filter(p => p.category === 'displays').length}</span>
             </a>
@@ -966,7 +1002,7 @@ function App() {
           <li>
             <a 
               className={currentView === 'category-objects' ? 'active' : ''} 
-              onClick={() => setCurrentView('category-objects')}
+              onClick={() => navigateToView('category-objects')}
             >
               Objects <span className="tab-badge">{PRODUCTS.filter(p => p.category === 'objects').length}</span>
             </a>
@@ -1225,7 +1261,7 @@ function App() {
                   className="category-promo-card" 
                   style={{ '--card-accent': 'var(--accent-cyan)', '--card-accent-rgb': '0, 243, 255' } as React.CSSProperties}
                   onClick={() => {
-                    setCurrentView('category-wearables');
+                    navigateToView('category-wearables');
                     window.scrollTo({ top: 0, behavior: 'instant' });
                   }}
                 >
@@ -1243,7 +1279,7 @@ function App() {
                   className="category-promo-card" 
                   style={{ '--card-accent': 'var(--accent-purple)', '--card-accent-rgb': '179, 114, 255' } as React.CSSProperties}
                   onClick={() => {
-                    setCurrentView('category-audio');
+                    navigateToView('category-audio');
                     window.scrollTo({ top: 0, behavior: 'instant' });
                   }}
                 >
@@ -1261,7 +1297,7 @@ function App() {
                   className="category-promo-card" 
                   style={{ '--card-accent': 'var(--accent-pink)', '--card-accent-rgb': '255, 46, 147' } as React.CSSProperties}
                   onClick={() => {
-                    setCurrentView('category-displays');
+                    navigateToView('category-displays');
                     window.scrollTo({ top: 0, behavior: 'instant' });
                   }}
                 >
@@ -1279,7 +1315,7 @@ function App() {
                   className="category-promo-card" 
                   style={{ '--card-accent': 'var(--accent-emerald)', '--card-accent-rgb': '0, 255, 170' } as React.CSSProperties}
                   onClick={() => {
-                    setCurrentView('category-objects');
+                    navigateToView('category-objects');
                     window.scrollTo({ top: 0, behavior: 'instant' });
                   }}
                 >
@@ -1388,7 +1424,7 @@ function App() {
           <div className="container category-hero-grid">
             <div className="hero-content">
               <button 
-                onClick={() => setCurrentView('home')}
+                onClick={() => navigateToView('home')}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -2060,11 +2096,11 @@ function App() {
       {/* Footer */}
       <div className="container">
         <footer>
-          <a className="footer-logo" onClick={() => setCurrentView('home')}>GLAS</a>
+          <a className="footer-logo" onClick={() => navigateToView('home')}>GLAS</a>
           <ul className="footer-links">
-            <li><a onClick={() => setCurrentView('home')}>Home</a></li>
+            <li><a onClick={() => navigateToView('home')}>Home</a></li>
             <li><a onClick={() => {
-              setCurrentView('category-wearables');
+              navigateToView('category-wearables');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}>Catalogue</a></li>
           </ul>
